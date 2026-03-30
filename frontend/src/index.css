@@ -1,0 +1,77 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    font-family: 'Inter', system-ui, sans-serif;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-gray-50 text-gray-900 dark:bg-gray-950 dark:text-gray-100;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  * {
+    @apply border-gray-200 dark:border-gray-800;
+  }
+}
+
+@layer components {
+  .card {
+    @apply bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-brand-600 text-white font-medium
+           hover:bg-brand-700 active:scale-95 transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200
+           font-medium hover:bg-gray-200 dark:hover:bg-gray-700 active:scale-95 transition-all duration-150;
+  }
+
+  .btn-danger {
+    @apply inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-red-600 text-white font-medium
+           hover:bg-red-700 active:scale-95 transition-all duration-150 disabled:opacity-50;
+  }
+
+  .input {
+    @apply w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700
+           bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100
+           placeholder-gray-400 dark:placeholder-gray-500
+           focus:outline-none focus:ring-2 focus:ring-brand-500/50 focus:border-brand-500
+           transition-all duration-150;
+  }
+
+  .badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold;
+  }
+
+  .sidebar-link {
+    @apply flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium
+           text-gray-600 dark:text-gray-400
+           hover:bg-gray-100 dark:hover:bg-gray-800
+           hover:text-gray-900 dark:hover:text-gray-100
+           transition-all duration-150;
+  }
+
+  .sidebar-link.active {
+    @apply bg-brand-50 dark:bg-brand-950/50 text-brand-700 dark:text-brand-400;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { @apply bg-transparent; }
+::-webkit-scrollbar-thumb { @apply bg-gray-300 dark:bg-gray-700 rounded-full; }
+::-webkit-scrollbar-thumb:hover { @apply bg-gray-400 dark:bg-gray-600; }
+
+/* Spinner */
+.spinner {
+  @apply animate-spin rounded-full border-2 border-gray-300 dark:border-gray-700 border-t-brand-600;
+}
