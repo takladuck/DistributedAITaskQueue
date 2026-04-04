@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: distributed-ai-task-queue
+    env: docker
+    dockerContext: ./backend
+    dockerfilePath: ./backend/Dockerfile
+    region: ohio
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: DOPPLER_TOKEN
+        sync: false
+      - key: ENVIRONMENT
+        value: production
+
