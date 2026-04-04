@@ -62,3 +62,7 @@ Desktop.ini
 # Docker
 .dockerignore
 docker-compose.override.yml
+
+# Internal Docs (only README.md should be public)
+DEPLOYMENT_GUIDE.md
+PROJECT_GUIDE.md
