@@ -5,7 +5,7 @@ WORKDIR /app
 # Install system deps for asyncpg + gnupg (required by Doppler's GPG signature verification)
 # Install Doppler CLI in the SAME layer so apt lists are still available
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    gcc libpq-dev curl gpg gnupg apt-transport-https \
+    gcc libpq-dev curl gpg gpgv gnupg apt-transport-https \
     && (curl -Ls --tlsv1.2 --proto "=https" --retry 3 https://cli.doppler.com/install.sh || wget -t 3 -qO- https://cli.doppler.com/install.sh) | sh \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
