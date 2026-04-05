@@ -44,6 +44,21 @@ async def get_db() -> AsyncSession:
 
 
 async def init_db():
-    async with engine.begin() as conn:
-        from app.models import User, Task, Job  # noqa: F401
-        await conn.run_sync(Base.metadata.create_all)
+    """Create tables, with retry logic for cloud DB cold starts."""
+    import asyncio
+    import logging
+    log = logging.getLogger(__name__)
+
+    for attempt in range(1, 6):
+        try:
+            async with engine.begin() as conn:
+                from app.models import User, Task, Job  # noqa: F401
+                await conn.run_sync(Base.metadata.create_all)
+            log.info("Database initialized successfully")
+            return
+        except Exception as e:
+            log.warning(f"DB init attempt {attempt}/5 failed: {e}")
+            if attempt < 5:
+                await asyncio.sleep(attempt * 2)  # 2s, 4s, 6s, 8s
+            else:
+                raise

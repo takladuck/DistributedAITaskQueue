@@ -1,5 +1,6 @@
 import os
 from pydantic_settings import BaseSettings
+from pydantic import field_validator
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -26,6 +27,16 @@ class Settings(BaseSettings):
 
     # Environment
     ENVIRONMENT: str = "development"
+
+    @field_validator("DATABASE_URL")
+    @classmethod
+    def ensure_asyncpg_driver(cls, v: str) -> str:
+        """Auto-fix common Supabase URL mistake: postgresql:// → postgresql+asyncpg://"""
+        if v.startswith("postgresql://"):
+            v = v.replace("postgresql://", "postgresql+asyncpg://", 1)
+        elif v.startswith("postgres://"):
+            v = v.replace("postgres://", "postgresql+asyncpg://", 1)
+        return v
 
     @property
     def cors_origins_list(self) -> list[str]:
