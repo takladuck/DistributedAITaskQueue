@@ -1,10 +1,11 @@
 import pytest
+import pytest_asyncio
 import uuid
 from unittest.mock import AsyncMock, patch, MagicMock
 from httpx import AsyncClient, ASGITransport
 
 
-@pytest.fixture
+@pytest_asyncio.fixture
 async def client():
     """Test client with mocked DB and Redis."""
     with (

@@ -1,6 +1,12 @@
 # Distributed AI Task Queue
 
+[![CI/CD Pipeline](https://github.com/takladuck/DistributedAITaskQueue/actions/workflows/ci.yml/badge.svg)](https://github.com/takladuck/DistributedAITaskQueue/actions/workflows/ci.yml)
+
 Production-grade distributed task queue system with AI integration, real-time WebSocket monitoring, priority scheduling, and a React dashboard.
+
+### 🔗 [Live Demo](https://distributed-ai-task-queue.vercel.app/)
+
+> **Note:** The backend runs on Render's free tier and may take ~30 seconds to wake up on the first request.
 
 ## Architecture
 
@@ -49,7 +55,9 @@ Production-grade distributed task queue system with AI integration, real-time We
 | Frontend     | React 18 + Vite + TailwindCSS v3 + Recharts  |
 | Auth         | JWT (access 30min + refresh 7d) + bcrypt      |
 | Containers   | Docker + Docker Compose                       |
-| CI/CD        | GitHub Actions                                |
+| CI/CD        | GitHub Actions (test → build → deploy)        |
+| Secrets      | Doppler (centralized secret management)       |
+| IaC          | Render Blueprint (`render.yaml`)              |
 | Deployment   | Render.com (backend) + Vercel (frontend)      |
 
 ## Quick Start (Docker Compose)
@@ -284,27 +292,36 @@ tests/test_jobs_api.py        — API auth guards, endpoint responses
 
 ## Deployment
 
-### Backend → Render.com
+The system is deployed entirely on free tiers using a **unified container** strategy — both the FastAPI API server and the AI background worker run inside a single Docker container via `start.sh`, eliminating the need for a paid background worker service.
 
-1. Create a new **Web Service** on Render
-2. Connect your GitHub repo, set root to `backend/`
-3. Build command: `pip install -r requirements.txt`
-4. Start command: `uvicorn app.main:app --host 0.0.0.0 --port $PORT`
-5. Add all environment variables from `.env.example`
-6. Add a second **Background Worker** service for the worker:
-   - Start command: `python -m app.worker`
+Secrets are managed centrally with **Doppler** and injected at runtime via the `doppler run` CLI.
+
+### Backend → Render.com (Docker)
+
+1. Fork/push this repo to GitHub
+2. Go to Render → **New+ → Blueprint** → connect your repo
+3. Render auto-detects `render.yaml` and creates the service
+4. Set the `DOPPLER_TOKEN` environment variable (Doppler Service Token for `prd` config)
+5. The container auto-starts both the API and worker process
 
 ### Frontend → Vercel
 
-```bash
-cd frontend
-npm install -g vercel
-vercel --prod
-```
+1. Go to Vercel → **Add New → Project** → import your repo
+2. Set root directory to `frontend`
+3. Add environment variables:
+   - `VITE_API_URL` → `https://your-backend.onrender.com`
+   - `VITE_WS_URL` → `wss://your-backend.onrender.com`
 
-Set environment variables in Vercel dashboard:
-- `VITE_API_URL` → your Render backend URL
-- `VITE_WS_URL` → `wss://your-backend.onrender.com`
+### Doppler Secrets (Production)
+
+| Secret | Description |
+|---|---|
+| `DATABASE_URL` | Supabase Session Mode pooler URL (asyncpg) |
+| `REDIS_URL` | Upstash Redis TLS URL |
+| `GEMINI_API_KEY` | Google Gemini API key |
+| `JWT_SECRET_KEY` | Random string for JWT signing |
+| `JWT_ALGORITHM` | `HS256` |
+| `CORS_ORIGINS` | Vercel frontend URL |
 
 ### CI/CD Secrets (GitHub Actions)
 

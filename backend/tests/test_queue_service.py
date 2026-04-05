@@ -49,7 +49,7 @@ def mock_redis():
     async def scard(key):
         return len(running_set)
 
-    async def set(key, value, nx=False, ex=None):
+    async def redis_set(key, value, nx=False, ex=None):
         if nx and key in locks:
             return None  # lock already held
         locks[key] = value
@@ -83,7 +83,7 @@ def mock_redis():
     redis.sadd = sadd
     redis.srem = srem
     redis.scard = scard
-    redis.set = set
+    redis.set = redis_set
     redis.delete = delete
     redis.hset = hset
     redis.hgetall = hgetall
