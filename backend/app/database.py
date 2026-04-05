@@ -1,6 +1,12 @@
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
 from sqlalchemy.orm import DeclarativeBase
 from app.config import settings
+import ssl
+
+# Create SSL context for Supabase (requires SSL from external connections)
+ssl_context = ssl.create_default_context()
+ssl_context.check_hostname = False
+ssl_context.verify_mode = ssl.CERT_NONE
 
 engine = create_async_engine(
     settings.DATABASE_URL,
@@ -8,6 +14,10 @@ engine = create_async_engine(
     pool_pre_ping=True,
     pool_size=5,
     max_overflow=10,
+    connect_args={
+        "ssl": ssl_context,
+        "server_settings": {"jit": "off"},  # Supabase free tier compatibility
+    },
 )
 
 async_session_factory = async_sessionmaker(
